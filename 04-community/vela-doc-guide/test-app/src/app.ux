@@ -1,0 +1,14 @@
+export default {
+  onCreate() {
+    console.log('App onCreate');
+  },
+  onShow() {
+    console.log('App onShow');
+  },
+  onHide() {
+    console.log('App onHide');
+  },
+  onDestroy() {
+    console.log('App onDestroy');
+  }
+}

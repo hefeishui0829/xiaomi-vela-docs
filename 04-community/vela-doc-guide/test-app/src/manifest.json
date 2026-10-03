@@ -1,0 +1,27 @@
+{
+  "package": "com.test.app",
+  "name": "TestApp",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "deviceTypeList": ["watch"],
+  "features": [
+    { "name": "system.router" },
+    { "name": "system.storage" },
+    { "name": "system.prompt" },
+    { "name": "system.app" }
+  ],
+  "config": {
+    "designWidth": 336,
+    "logLevel": "log"
+  },
+  "router": {
+    "entry": "index",
+    "pages": {
+      "index": { "component": "index", "path": "/" },
+      "settings": { "component": "settings", "path": "/settings" }
+    }
+  },
+  "display": {
+    "backgroundColor": "#000000"
+  }
+}

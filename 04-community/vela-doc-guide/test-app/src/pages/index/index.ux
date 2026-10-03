@@ -1,0 +1,87 @@
+<template>
+  <div class="page">
+    <img static src="/common/images/hd.png" style="position:absolute;left:0;top:0;width:336px;height:102px;" />
+    <img static src="/common/images/back.png" @click="exit" style="position:absolute;left:6px;top:6px;width:72px;height:72px;"/>
+    <img static src="/common/images/more.png" @click="gotoSettings" style="position:absolute;left:258px;top:6px;width:72px;height:72px;"/>
+    <text style="position:absolute;left:78px;top:7px;width:180px;font-size:24px;font-weight:bold;color:rgba(255,255,255,0.6);text-align:center;">{{nowTime}}</text>
+    <text style="position:absolute;left:78px;top:35px;width:180px;font-size:32px;font-weight:bold;color:white;text-align:center;">我的App</text>
+    
+    <list class="list">
+      <list-item type="item" class="item" for="{{item in items}}" @click="onItemClick($item)">
+        <text class="itemtext">{{item.name}}</text>
+        <text class="itemtext2">{{item.subtitle}}</text>
+        <img src="/common/images/enter.png" style="width:48px;height:48px;" static />
+      </list-item>
+    </list>
+    
+    <div if="{{showSearch}}" class="search-fab">
+      <img static src="/common/images/search.png" @click="openSearch" />
+    </div>
+  </div>
+</template>
+
+<script>
+import router from '@system.router';
+import app from '@system.app';
+
+export default {
+  private: {
+    nowTime: '00:00',
+    timer: null,
+    items: [
+      { id: 1, name: '图书', subtitle: '阅读电子书' },
+      { id: 2, name: '设置', subtitle: '应用设置' },
+      { id: 3, name: '关于', subtitle: '版本信息' }
+    ],
+    showSearch: true
+  },
+  
+  onInit() {
+    this.updateTime();
+    this.timer = setInterval(() => { this.updateTime(); }, 1000);
+  },
+  
+  onDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  },
+  
+  updateTime() {
+    const date = new Date();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    this.nowTime = `${hours}:${minutes}`;
+  },
+  
+  onItemClick(item) {
+    if (item.id === 1) {
+      router.push({ uri: '/pages/list' });
+    } else if (item.id === 2) {
+      router.push({ uri: '/pages/settings' });
+    }
+  },
+  
+  openSearch() {
+    console.log('Open search');
+  },
+  
+  gotoSettings() {
+    router.push({ uri: '/pages/settings' });
+  },
+  
+  exit() {
+    app.terminate();
+  }
+}
+</script>
+
+<style>
+.page { width: 100%; height: 100%; background-color: #000000; position: relative; }
+.list { width: 100%; height: 100%; padding: 86px 6px; position: absolute; top: 0; left: 0; }
+.item { width: 100%; height: 112px; padding: 14px 20px; margin-bottom: 8px; background-color: #262626; border-radius: 36px; justify-content: space-between; align-items: center; }
+.itemtext { font-size: 32px; font-weight: bold; color: white; }
+.itemtext2 { font-size: 28px; font-weight: bold; color: rgba(255,255,255,0.6); }
+
+.search-fab { position: absolute; right: 24px; bottom: 24px; width: 72px; height: 72px; }
+</style>

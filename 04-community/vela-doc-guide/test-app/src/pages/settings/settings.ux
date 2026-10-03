@@ -1,0 +1,131 @@
+<template>
+  <div class="page">
+    <img static src="/common/images/hd.png" style="position:absolute;left:0;top:0;width:336px;height:102px;" />
+    <img static src="/common/images/back.png" @click="back" style="position:absolute;left:6px;top:6px;width:72px;height:72px;"/>
+    <text style="position:absolute;left:78px;top:35px;width:180px;font-size:32px;font-weight:bold;color:white;text-align:center;">设置</text>
+    
+    <list class="list">
+      <!-- 开关设置项 -->
+      <list-item class="item" @click="toggleDarkMode">
+        <text class="itemtext">深色模式</text>
+        <img src="{{darkMode ? '/common/images/Switch_ON.png' : '/common/images/Switch_OFF.png'}}" style="width:60px;height:42px;" static />
+      </list-item>
+      
+      <list-item class="item" @click="toggleNotification">
+        <text class="itemtext">通知提醒</text>
+        <img src="{{notification ? '/common/images/Switch_ON.png' : '/common/images/Switch_OFF.png'}}" style="width:60px;height:42px;" static />
+      </list-item>
+      
+      <list-item class="item" @click="toggleAutoSync">
+        <text class="itemtext">自动同步</text>
+        <img src="{{autoSync ? '/common/images/Switch_ON.png' : '/common/images/Switch_OFF.png'}}" style="width:60px;height:42px;" static />
+      </list-item>
+      
+      <!-- 数值选择设置项 -->
+      <list-item class="item" @click="openFontSize">
+        <text class="itemtext">字体大小</text>
+        <text class="itemtext2">{{fontSize}}px</text>
+      </list-item>
+      
+      <list-item class="item" @click="openBrightness">
+        <text class="itemtext">屏幕亮度</text>
+        <text class="itemtext2">{{brightness}}%</text>
+      </list-item>
+      
+      <!-- 版本信息 -->
+      <list-item class="item" @click="showAbout">
+        <text class="itemtext">关于</text>
+        <text class="itemtext2">v1.0.0</text>
+      </list-item>
+    </list>
+  </div>
+</template>
+
+<script>
+import router from '@system.router';
+import storage from '@system.storage';
+import prompt from '@system.prompt';
+
+export default {
+  private: {
+    darkMode: true,
+    notification: true,
+    autoSync: false,
+    fontSize: 30,
+    brightness: 80
+  },
+  
+  onInit() {
+    this.loadSettings();
+  },
+  
+  loadSettings() {
+    storage.get({
+      key: 'settings',
+      success: (data) => {
+        if (data) {
+          const settings = JSON.parse(data);
+          this.darkMode = settings.darkMode ?? true;
+          this.notification = settings.notification ?? true;
+          this.autoSync = settings.autoSync ?? false;
+          this.fontSize = settings.fontSize ?? 30;
+          this.brightness = settings.brightness ?? 80;
+        }
+      }
+    });
+  },
+  
+  saveSettings() {
+    const settings = {
+      darkMode: this.darkMode,
+      notification: this.notification,
+      autoSync: this.autoSync,
+      fontSize: this.fontSize,
+      brightness: this.brightness
+    };
+    storage.set({
+      key: 'settings',
+      value: JSON.stringify(settings)
+    });
+  },
+  
+  toggleDarkMode() {
+    this.darkMode = !this.darkMode;
+    this.saveSettings();
+  },
+  
+  toggleNotification() {
+    this.notification = !this.notification;
+    this.saveSettings();
+  },
+  
+  toggleAutoSync() {
+    this.autoSync = !this.autoSync;
+    this.saveSettings();
+  },
+  
+  openFontSize() {
+    prompt.showToast({ message: '字体大小设置' });
+  },
+  
+  openBrightness() {
+    prompt.showToast({ message: '亮度设置' });
+  },
+  
+  showAbout() {
+    prompt.showToast({ message: 'Vela App v1.0.0' });
+  },
+  
+  back() {
+    router.back();
+  }
+}
+</script>
+
+<style>
+.page { width: 100%; height: 100%; background-color: #000000; position: relative; }
+.list { width: 100%; height: 100%; padding: 86px 6px; position: absolute; top: 0; left: 0; }
+.item { width: 100%; height: 112px; padding: 14px 20px; margin-bottom: 8px; background-color: #262626; border-radius: 36px; justify-content: space-between; align-items: center; }
+.itemtext { font-size: 32px; font-weight: bold; color: white; }
+.itemtext2 { font-size: 28px; font-weight: bold; color: rgba(255,255,255,0.6); }
+</style>

@@ -1,0 +1,246 @@
+# Vela 应用开发 AGENTS.md 模板
+
+> 此模板用于指导 AI 开发 Vela 手表应用。开发新项目时，复制此文件为 `AGENTS.md` 并按此规范开发。
+
+---
+
+## 项目概述
+
+[在此填写项目名称]
+
+[在此填写项目功能描述]
+
+**目标设备**: [圆屏/方屏/胶囊屏]  
+**designWidth**: [480/336/192]
+
+---
+
+## 技术栈
+
+| 技术 | 说明 |
+|------|------|
+| 开发语言 | JavaScript |
+| 页面文件 | `.ux` |
+| 样式 | CSS (Flex布局) |
+| 存储 | `@system.storage` |
+| 构建工具 | AIoT-IDE |
+
+---
+
+## 项目结构
+
+```
+src/
+├── pages/
+│   └── index/
+│       └── index.ux          # 首页
+├── components/                # 自定义组件
+├── utils/                    # 工具函数
+├── i18n/                    # 国际化
+├── common/                  # 公共资源(图片等)
+├── manifest.json            # 应用配置
+└── config-watch.json        # 设备配置
+```
+
+---
+
+## 核心规范
+
+### 1. manifest.json 配置
+
+```json
+{
+  "package": "com.example.app",
+  "name": "AppName",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "pages": [
+    { "src": "pages/index/index.ux" }
+  ],
+  "permissions": [
+    { "origin": "*", "ubus": ["**"] }
+  ],
+  "config": {
+    "designWidth": 336
+  }
+}
+```
+
+### 2. 页面结构 (.ux)
+
+```javascript
+// 页面文件结构
+export default {
+  // 页面私有数据
+  private: {
+    data1: 'default'
+  },
+  
+  // 页面显示时调用
+  onShow() { },
+  
+  // 页面隐藏时调用
+  onHide() { },
+  
+  // 页面销毁
+  onDestroy() { },
+  
+  // 处理函数
+  handleClick() {
+    // ...
+  }
+}
+```
+
+### 3. 路由跳转
+
+```javascript
+import router from '@system.router'
+
+// 跳转
+router.push({ uri: 'pages/detail/detail' })
+
+// 返回
+router.back()
+```
+
+### 4. 存储使用
+
+```javascript
+import storage from '@system.storage'
+
+// 读取
+storage.get({ key: 'setting' }).then(data => {
+  // data.value
+})
+
+// 写入
+storage.set({ key: 'setting', value: JSON.stringify(data) })
+```
+
+---
+
+## UI 开发规范
+
+### 布局基础
+
+- 页面容器: `width: 336px; height: 480px; flex-direction: column;`
+- 状态栏高度: 102px
+- 底部操作栏: 102px
+- 侧边距: 6px
+
+### 颜色规范
+
+```
+背景: #000000
+卡片: #262626
+强调: #0D6EFF
+文字: #FFFFFF
+次级文字: rgba(255,255,255,0.6)
+```
+
+### 字体规范
+
+```
+大标题: 32px, 粗体
+标题: 24px, 粗体
+正文: 28-30px
+辅助: 20-24px
+```
+
+详见 [vela-ui-guide.md](./vela-ui-guide.md)
+
+---
+
+## 重要差异 (vs Web开发)
+
+| Web开发 | Vela开发 |
+|---------|----------|
+| `localStorage` | `@system.storage` |
+| Vue Router | `manifest.json` 声明 + `router.push()` |
+| `import` 组件 | `<import>` 标签 |
+| HTTP 文件路径 | `internal://` 协议 |
+| 所有CSS | Flex为主，部分不支持 |
+
+---
+
+## 常用 API
+
+### 路由
+```javascript
+router.push({ uri: 'pages/xxx/xxx' })
+router.back()
+```
+
+### 存储
+```javascript
+storage.get({ key: 'xxx' })
+storage.set({ key: 'xxx', value: 'xxx' })
+```
+
+### 网络
+```javascript
+fetch.fetch({ url: 'https://api.example.com' })
+```
+
+### 传感器
+```javascript
+import sensor from '@system.sensor';
+sensor.subscribeAccelerometer({ callback: (data) => {} });
+```
+
+---
+
+## 页面跳转传参
+
+```javascript
+// A页面
+router.push({
+  uri: 'pages/detail/detail',
+  params: { id: 123 }
+})
+
+// B页面 onShow中获取
+onShow() {
+  const params = this.$app.$def.launchParams
+  // params.id
+}
+```
+
+---
+
+## 注意事项
+
+1. **屏幕适配**: 使用 `rpx` 单位或根据 `designWidth` 计算
+2. **内存限制**: 手环内存有限，避免加载大文件
+3. **调试**: 使用 AIot-IDE 的模拟器或真机调试
+4. **打包**: 需配置证书才能安装到真机
+
+---
+
+## 快速参考
+
+- 开发指南: [vela-dev-guide.md](./vela-dev-guide.md)
+- UI指南: [vela-ui-guide.md](./vela-ui-guide.md)
+- 官方文档: [docs-official/docs/zh/](./docs-official/docs/zh/)
+- 源码参考: [archive/](./archive/)
+
+---
+
+## 常见问题
+
+### Q: 存储不生效
+A: 检查 key 是否为字符串，value 需为字符串(用 `JSON.stringify`)
+
+### Q: 页面跳转失败
+A: 检查 manifest.json 是否已声明目标页面
+
+### Q: 样式不生效
+A: Vela 不支持所有 CSS 属性，主要使用 Flex 布局
+
+### Q: 图片不显示
+A: 使用 `internal://` 协议路径，或放入 `common` 目录
+
+---
+
+*此模板基于 vela_doc_guide 项目整理*
